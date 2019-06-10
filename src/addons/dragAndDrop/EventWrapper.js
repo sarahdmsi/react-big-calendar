@@ -84,11 +84,6 @@ class EventWrapper extends React.Component {
       ? !!get(event, draggableAccessor)
       : true
 
-    /* Event is not draggable, no need to wrap it */
-    if (!isDraggable && !isResizable) {
-      return children
-    }
-
     /*
      * The resizability of events depends on whether they are
      * allDay events and how they are displayed.
@@ -112,55 +107,58 @@ class EventWrapper extends React.Component {
       ? !!get(event, resizableAccessor)
       : true
 
-    if (isResizable || isDraggable) {
-      /*
-       * props.children is the singular <Event> component.
-       * BigCalendar positions the Event abolutely and we
-       * need the anchors to be part of that positioning.
-       * So we insert the anchors inside the Event's children
-       * rather than wrap the Event here as the latter approach
-       * would lose the positioning.
-       */
-      const newProps = {
-        onMouseDown: this.handleStartDragging,
-        onTouchStart: this.handleStartDragging,
-      }
-
-      if (isResizable) {
-        // replace original event child with anchor-embellished child
-        let StartAnchor = null
-        let EndAnchor = null
-
-        if (type === 'date') {
-          StartAnchor = !continuesPrior && this.renderAnchor('Left')
-          EndAnchor = !continuesAfter && this.renderAnchor('Right')
-        } else {
-          StartAnchor = !continuesPrior && this.renderAnchor('Up')
-          EndAnchor = !continuesAfter && this.renderAnchor('Down')
-        }
-
-        newProps.children = (
-          <div className="rbc-addons-dnd-resizable">
-            {StartAnchor}
-            {children.props.children}
-            {EndAnchor}
-          </div>
-        )
-      }
-
-      if (
-        draggable.dragAndDropAction.interacting && // if an event is being dragged right now
-        draggable.dragAndDropAction.event === event // and it's the current event
-      ) {
-        // add a new class to it
-        newProps.className = cn(
-          children.props.className,
-          'rbc-addons-dnd-dragged-event'
-        )
-      }
-
-      children = React.cloneElement(children, newProps)
+    /* Event is not draggable, no need to wrap it */
+    if (!isDraggable && !isResizable) {
+      return children
     }
+
+    /*
+     * props.children is the singular <Event> component.
+     * BigCalendar positions the Event abolutely and we
+     * need the anchors to be part of that positioning.
+     * So we insert the anchors inside the Event's children
+     * rather than wrap the Event here as the latter approach
+     * would lose the positioning.
+     */
+    const newProps = {
+      onMouseDown: this.handleStartDragging,
+      onTouchStart: this.handleStartDragging,
+    }
+
+    if (isResizable) {
+      // replace original event child with anchor-embellished child
+      let StartAnchor = null
+      let EndAnchor = null
+
+      if (type === 'date') {
+        StartAnchor = !continuesPrior && this.renderAnchor('Left')
+        EndAnchor = !continuesAfter && this.renderAnchor('Right')
+      } else {
+        StartAnchor = !continuesPrior && this.renderAnchor('Up')
+        EndAnchor = !continuesAfter && this.renderAnchor('Down')
+      }
+
+      newProps.children = (
+        <div className="rbc-addons-dnd-resizable">
+          {StartAnchor}
+          {children.props.children}
+          {EndAnchor}
+        </div>
+      )
+    }
+
+    if (
+      draggable.dragAndDropAction.interacting && // if an event is being dragged right now
+      draggable.dragAndDropAction.event === event // and it's the current event
+    ) {
+      // add a new class to it
+      newProps.className = cn(
+        children.props.className,
+        'rbc-addons-dnd-dragged-event'
+      )
+    }
+
+    children = React.cloneElement(children, newProps)
 
     return children
   }
