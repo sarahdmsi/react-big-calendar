@@ -148,6 +148,7 @@ class EventWrapper extends React.Component {
     }
 
     if (
+      isDraggable &&
       draggable.dragAndDropAction.interacting && // if an event is being dragged right now
       draggable.dragAndDropAction.event === event // and it's the current event
     ) {
