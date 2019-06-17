@@ -120,10 +120,12 @@ class EventWrapper extends React.Component {
      * rather than wrap the Event here as the latter approach
      * would lose the positioning.
      */
-    const newProps = {
-      onMouseDown: this.handleStartDragging,
-      onTouchStart: this.handleStartDragging,
-    }
+    const newProps = isDraggable
+      ? {
+          onMouseDown: this.handleStartDragging,
+          onTouchStart: this.handleStartDragging,
+        }
+      : {}
 
     if (isResizable) {
       // replace original event child with anchor-embellished child
